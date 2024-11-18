@@ -1,0 +1,39 @@
+<main class="container mt-4">
+  <div class="mb-4">
+    <a class="text-decoration-none me-2" routerLink="/login">Login</a>
+    <a class="text-decoration-none" routerLink="/register">Register</a>
+  </div>
+  <div *ngIf="products" class="row">
+    <div class="col-12 mb-3">
+      <h2>Products</h2>
+    </div>
+    <div *ngFor="let product of products" class="col-md-4 mb-4">
+      <div class="card h-100">
+        <img [src]="product.imageUrl" class="card-img-top" [alt]="product.name">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">
+            {{ product.description }}
+          </p>
+          <ul class="list-group list-group-flush mb-3">
+            <li class="list-group-item">
+              <strong>Price:</strong> {{ product.price | currency }}
+            </li>
+            <li class="list-group-item">
+              <strong>Brand:</strong> {{ product.brand }}
+            </li>
+            <li class="list-group-item">
+              <strong>Category:</strong> {{ product.category.name }}
+            </li>
+            <li class="list-group-item">
+              <strong>Stock:</strong> {{ product.stock }}
+            </li>
+          </ul>
+          <div class="text-center">
+            <button class="btn btn-primary">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
