@@ -16,16 +16,11 @@ export class AuthService {
     private userService: UserService
   ) {}
 
-  registerUser(
-    email: string,
-    password: string,
-    username: string,
-    role: string
-  ): void {
+  registerUser(email: string, password: string, username: string): void {
     this.userService.getUsers().subscribe(
       (users: User[]) => {
         const id = this.generateUniqueId(users);
-        const newUser = { id, email, password, username, role };
+        const newUser = { id, email, password, username };
         users.push(newUser);
         const usersForSave = { data: { users } };
         this.userService.addUser(usersForSave).subscribe(
@@ -53,6 +48,11 @@ export class AuthService {
         );
         if (user) {
           const { id, username, email } = user;
+          this.storageService.setItem('currentUser', {
+            id,
+            username,
+            email,
+          });
           return true;
         } else {
           return false;
