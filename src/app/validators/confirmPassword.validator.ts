@@ -10,5 +10,5 @@ export function confirmPasswordValidator(
     return null;
   }
 
-  return password === confirmPassword ? null : { passwordMismatch: true };
+  return password === confirmPassword ? null : { confirmPassword: true };
 }
