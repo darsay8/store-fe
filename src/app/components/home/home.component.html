@@ -1,8 +1,20 @@
 <main class="container mt-4">
-  <div class="mb-4">
+  <div class="mb-4" *ngIf="!isLoggedIn()">
     <a class="text-decoration-none me-2" routerLink="/login">Login</a>
     <a class="text-decoration-none" routerLink="/register">Register</a>
   </div>
+  <div class="mb-4" *ngIf="isLoggedIn()">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="">
+        <a class="text-decoration-none me-2" routerLink="/profile">Account</a>
+        <a class="text-decoration-none me-5" routerLink="/cart">Cart</a>
+      </div>
+      <a class="btn btn-secondary" href="" (click)="logout()">Logout</a>
+    </div>
+  </div>
+
+
+
   <div *ngIf="products" class="row">
     <div class="col-12 mb-3">
       <h2>Products</h2>

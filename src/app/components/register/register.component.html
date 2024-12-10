@@ -6,6 +6,7 @@
     <div class="row justify-content-center">
       <h2 class="text-center">Register</h2>
       <div class="form-container col-md-6 mb-4">
+
         <form id="registerForm" [formGroup]="registerForm" (submit)="submitForm()">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
@@ -38,10 +39,19 @@
               class="form-error">
               <div *ngIf="registerForm.get('password')?.errors?.['required']">Password is required.</div>
               <div *ngIf="registerForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters
-                long.
+                long.</div>
+              <div *ngIf="registerForm.get('password')?.errors?.['specialChar']">Password must contain at least one
+                special character.</div>
+              <div *ngIf="registerForm.get('password')?.errors?.['number']">Password must contain at least one number.
+              </div>
+              <div *ngIf="registerForm.get('password')?.errors?.['uppercase']">Password must contain at least one
+                uppercase letter.</div>
+              <div *ngIf="registerForm.get('password')?.errors?.['maxLength']">Password cannot exceed 8 characters.
               </div>
             </div>
           </div>
+
+
           <div class="mb-3">
             <label for="confirmPassword" class="form-label">Confirm Password</label>
             <input type="password" class="form-control" id="confirmPassword" formControlName="confirmPassword">
@@ -52,12 +62,14 @@
               <div *ngIf="registerForm.get('confirmPassword')?.errors?.['minlength']">Password must be at least 6
                 characters long.
               </div>
-              <div *ngIf="registerForm.errors?.['passwordMismatch']">
+              <div *ngIf="registerForm?.errors?.['confirmPassword']">
                 Passwords do not match.
               </div>
             </div>
           </div>
-          <button type="submit" class="btn btn-primary">Register</button>
+
+
+          <button type=" submit" class="btn btn-primary">Register</button>
           <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">Reset</button>
         </form>
         <div class="text-center mt-3">

@@ -18,7 +18,6 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  // users: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -37,11 +36,34 @@ export class LoginComponent implements OnInit {
   submitForm(): void {
     if (this.loginForm.valid) {
       const { email, password } = this.loginForm.value;
-      this.authService.loginUser(email, password);
+
+      this.authService.loginUser(email, password).subscribe(
+        (isLoggedIn) => this.handleLoginSuccess(isLoggedIn),
+        (error) => this.handleLoginError(error)
+      );
+    } else {
+      this.handleInvalidForm();
+    }
+  }
+
+  private handleLoginSuccess(isLoggedIn: boolean): void {
+    if (isLoggedIn) {
       this.router.navigate(['/']);
     } else {
-      this.markFormGroupTouched(this.loginForm);
+      this.handleLoginFailure();
     }
+  }
+
+  private handleLoginFailure(): void {
+    console.log('Login failed');
+  }
+
+  private handleLoginError(error: any): void {
+    console.error('Login error:', error);
+  }
+
+  private handleInvalidForm(): void {
+    this.markFormGroupTouched(this.loginForm);
   }
 
   markFormGroupTouched(formGroup: FormGroup): void {

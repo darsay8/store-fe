@@ -9,7 +9,8 @@ import {
 import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../services/auth/auth.service';
-import { confirmPasswordValidator } from '../../validators/password.validator';
+import { confirmPasswordValidator } from '../../validators/confirmPassword.validator';
+import { passwordStrengthValidator } from '../../validators/passwordStrength.validator';
 
 @Component({
   selector: 'app-register',
@@ -33,8 +34,16 @@ export class RegisterComponent implements OnInit {
       {
         username: ['', [Validators.required, Validators.minLength(3)]],
         email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(6)]],
-        confirmPassword: ['', [Validators.required, Validators.minLength(6)]],
+        password: [
+          '',
+          [
+            Validators.required,
+            passwordStrengthValidator(),
+            Validators.minLength(6),
+            Validators.maxLength(8),
+          ],
+        ],
+        confirmPassword: ['', [Validators.required]],
       },
       {
         validator: confirmPasswordValidator,
@@ -43,20 +52,55 @@ export class RegisterComponent implements OnInit {
   }
 
   submitForm(): void {
-    if (this.registerForm.valid) {
-      const { email, password, username } = this.registerForm.value;
-      this.authService.registerUser(email, password, username);
+    if (this.registerForm.invalid) {
+      this.handleInvalidForm();
+      return;
+    }
+
+    const { email, username, password } = this.registerForm.value;
+
+    this.authService.registerUser(email, username, password).subscribe(
+      (success) => this.handleRegistrationSuccess(success),
+      (error) => this.handleRegistrationError(error)
+    );
+  }
+
+  private handleRegistrationSuccess(success: boolean): void {
+    if (success) {
+      console.log('Registration and login successful');
       this.router.navigate(['/']);
     } else {
-      this.markFormGroupTouched(this.registerForm);
+      this.handleRegistrationFailure();
     }
   }
 
-  resetForm() {
+  private handleRegistrationFailure(): void {
+    console.error('Registration failed');
+  }
+
+  private handleRegistrationError(error: any): void {
+    console.error('Registration error:', error);
+  }
+
+  private handleInvalidForm(): void {
+    this.markFormGroupTouched(this.registerForm);
+  }
+
+  resetForm(): void {
     this.registerForm.reset({
+      username: '',
       email: '',
       password: '',
       confirmPassword: '',
+    });
+
+    this.registerForm.markAsPristine();
+    this.registerForm.markAsUntouched();
+
+    // Clear all validation errors
+    Object.keys(this.registerForm.controls).forEach((key) => {
+      const control = this.registerForm.get(key);
+      control?.setErrors(null);
     });
   }
 

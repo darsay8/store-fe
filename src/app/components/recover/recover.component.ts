@@ -34,8 +34,6 @@ export class RecoverComponent implements OnInit {
 
   submitForm() {
     if (this.recoverForm.valid) {
-      // console.log('Recover form submitted', this.recoverForm.value.email);
-
       this.showMessage('Password recovery email sent successfully', 'success');
 
       this.recoverForm.reset();
@@ -48,7 +46,6 @@ export class RecoverComponent implements OnInit {
     this.message = message;
     this.messageType = type;
 
-    // Clear message after 5 seconds
     setTimeout(() => {
       this.message = '';
     }, 5000);

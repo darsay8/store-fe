@@ -1,0 +1,32 @@
+<main class="mt-4">
+  <div class="container">
+    <a class="text-decoration-none" routerLink="/profile">⬅️</a>
+    <form [formGroup]="editForm" (submit)="onSubmit()">
+      <div class="form-group">
+        <label for="name">Username:</label>
+        <input type="text" class="form-control" id="username" formControlName="username"
+          placeholder="Enter your username">
+        <div
+          *ngIf="editForm.get('username')?.invalid && (editForm.get('username')?.dirty || editForm.get('username')?.touched)"
+          class="form-error">
+          <div *ngIf="editForm.get('username')?.errors?.['required']">Username is required.</div>
+          <div *ngIf="editForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters
+            long.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group mt-4">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" formControlName="email" placeholder="Enter your email">
+        <div *ngIf="editForm.get('email')?.invalid && (editForm.get('email')?.dirty || editForm.get('email')?.touched)"
+          class="form-error">
+          <div *ngIf="editForm.get('email')?.errors?.['required']">Email is required.</div>
+          <div *ngIf="editForm.get('email')?.errors?.['email']">Invalid email format.</div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary mt-4" type="submit">Save Changes</button>
+    </form>
+  </div>
+</main>
