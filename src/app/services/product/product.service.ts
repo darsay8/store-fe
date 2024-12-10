@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, map, catchError, throwError } from 'rxjs';
+import { Observable, catchError, throwError } from 'rxjs';
 import { Category, Product } from '../../models/models';
 import { environment } from '../../../environments/environment.development';
 
@@ -8,7 +8,8 @@ import { environment } from '../../../environments/environment.development';
   providedIn: 'root',
 })
 export class ProductService {
-  private dataUrl = 'data/products.json';
+  // private dataUrl = 'data/products.json';
+  private readonly dataUrl = 'http://localhost:8082/api/products';
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -19,10 +20,9 @@ export class ProductService {
   constructor(private http: HttpClient) {}
 
   getProducts(): Observable<Product[]> {
-    return this.http.get<{ data: { products: Product[] } }>(this.dataUrl).pipe(
-      map((response) => response.data.products),
-      catchError(this.handleError)
-    );
+    return this.http
+      .get<Product[]>(this.dataUrl)
+      .pipe(catchError(this.handleError));
   }
 
   private handleError(error: any) {

@@ -1,4 +1,8 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpErrorResponse,
+  HttpHeaders,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map, catchError, throwError, switchMap } from 'rxjs';
 import { User } from '../../models/models';
@@ -7,8 +11,8 @@ import { User } from '../../models/models';
   providedIn: 'root',
 })
 export class UserService {
-  private dataUrl = 'data/users.json';
-  // private dataUrl = 'http://localhost:4200/data/users.json';
+  // private dataUrl = 'data/users.json';
+  private readonly dataUrl = 'http://localhost:8080/api/users';
 
   httpOptions = {
     headers: new HttpHeaders({
@@ -19,18 +23,13 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   getUsers(): Observable<User[]> {
-    return this.http.get<{ data: { users: User[] } }>(this.dataUrl).pipe(
-      map((response) => response.data.users),
-      catchError(this.handleError)
-    );
+    return this.http.get<User[]>(this.dataUrl);
   }
 
   getUserById(userId: number): Observable<User | undefined> {
-    return this.http.get<any>(this.dataUrl).pipe(
-      map((response) => {
-        const users = response.data.users;
-        const user = users.find((u: User) => u.id === userId);
-        return user;
+    return this.http.get<User[]>(this.dataUrl).pipe(
+      map((users) => {
+        return users.find((user) => user.id === userId);
       }),
       catchError((error) => {
         console.error('Error getting user by ID:', error);
@@ -44,25 +43,21 @@ export class UserService {
   }
 
   updateUser(user: User): Observable<any> {
-    return this.http.get<any>(this.dataUrl).pipe(
-      switchMap((response) => {
-        const users = response.data.users;
-        const index = users.findIndex((u: User) => u.id === user.id);
-        if (index !== -1) {
-          users[index] = user;
-          const usersForSave = { data: { users } };
-          return this.http.post<any>(
-            this.dataUrl,
-            usersForSave,
-            this.httpOptions
-          );
-        } else {
-          return throwError(`User with ID ${user.id} not found.`);
-        }
+    const url = `${this.dataUrl}/${user.id}`;
+    return this.http.put<any>(url, user, this.httpOptions).pipe(
+      map((response) => {
+        console.log('User updated successfully:', response);
+        return response;
       }),
       catchError((error) => {
-        console.error('Error updating user:', error);
-        return throwError(error);
+        const errorResponse = new HttpErrorResponse({
+          error: 'Error updating user',
+          status: error.status || 500,
+          statusText: error.statusText || 'Server Error',
+          url: url,
+        });
+        console.error('Error updating user:', errorResponse);
+        return throwError(errorResponse);
       })
     );
   }
@@ -81,7 +76,14 @@ export class UserService {
             this.httpOptions
           );
         } else {
-          return throwError(`User with ID ${userId} not found.`);
+          return throwError(
+            new HttpErrorResponse({
+              error: `User with ID ${userId} not found.`,
+              status: 404,
+              statusText: 'Not Found',
+              url: this.dataUrl,
+            })
+          );
         }
       }),
       catchError((error) => {
