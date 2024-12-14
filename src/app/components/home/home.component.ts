@@ -42,4 +42,40 @@ export class HomeComponent implements OnInit {
   logout() {
     this.authService.logoutUser();
   }
+
+  addToCart(product: Product): void {
+    let cart: {
+      productId: number;
+      name: string;
+      price: number;
+      quantity: number;
+    }[] = this.storageService.getItem('cart') || [];
+
+    const existingProductIndex = cart.findIndex(
+      (item) => item.productId === product.id
+    );
+
+    if (existingProductIndex === -1) {
+      cart.push({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+      });
+    } else {
+      cart[existingProductIndex].quantity += 1;
+    }
+
+    this.storageService.setItem('cart', cart);
+
+    const toastElement = document.getElementById('toast') as HTMLElement;
+    if (toastElement) {
+      const toast = new bootstrap.Toast(toastElement);
+      toast.show();
+
+      setTimeout(() => {
+        toast.hide();
+      }, 1000);
+    }
+  }
 }
